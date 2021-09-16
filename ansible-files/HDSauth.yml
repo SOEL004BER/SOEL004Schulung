@@ -1,23 +1,26 @@
 ---
 # Einloggen in das Test Hitachi Array
-  name: 'http://18.192.13.182/ConfigurationManager/v1/objects/sessions'
-  uri:
-    url: 'http://18.192.13.182/ConfigurationManager/v1/objects/sessions'
-    method: POST
-    body:
-      {"authenticationTimeout":600}
-    body_format: json
-    headers:
-      Connection: 'keep-alive'
-      Cache-Control: 'no-store'
-      Accept-Language: 'en'
-      Authorization: 'Basic c3lzYWRtaW46c3lzYWRtaW4='
-      Content-Type: 'application/json'
-      Accept: 'application/json, text/plain, */*'
-      User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36'
-      X-Client-Type: 'Colon UI'
-      If-Modified-Since: '0'
-      Origin: 'http://18.192.13.182'
-      Referer: 'http://18.192.13.182/StorageAdvisorEmbedded/'
-    validate_certs: no
-  register: result
+- name : Einloggen am Array
+  hosts: localhost
+  tasks:
+  - name: 'http://18.192.13.182/ConfigurationManager/v1/objects/sessions'
+    uri:
+      url: 'http://18.192.13.182/ConfigurationManager/v1/objects/sessions'
+      method: POST
+      body:
+        {"authenticationTimeout":600}
+      body_format: json
+      headers:
+        Connection: 'keep-alive'
+        Cache-Control: 'no-store'
+        Accept-Language: 'en'
+        Authorization: 'Basic c3lzYWRtaW46c3lzYWRtaW4='
+        Content-Type: 'application/json'
+        Accept: 'application/json, text/plain, */*'
+        User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36'
+        X-Client-Type: 'Colon UI'
+        If-Modified-Since: '0'
+        Origin: 'http://18.192.13.182'
+        Referer: 'http://18.192.13.182/StorageAdvisorEmbedded/'
+      validate_certs: no
+    register: result
