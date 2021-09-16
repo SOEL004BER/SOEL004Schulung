@@ -1,17 +1,17 @@
 ---
 # Einloggen in das Test Hitachi Array
 - name : Einloggen am Array
-  hosts: localhost
+  hosts: e900
   tasks:
   - name: 'Auth & get token'
     uri:
-      url: 'http://18.192.13.182/ConfigurationManager/v1/objects/sessions'
+      url: 'http://{{ address }}/ConfigurationManager/v1/objects/sessions'
       method: POST
       body:
         {"authenticationTimeout":600}
       body_format: json
       headers:
-        Authorization: 'Basic c3lzYWRtaW46c3lzYWRtaW4='
+        Authorization: "Basic {{ (username + ':' + password) | string | b64encode }}"
         Content-Type: 'application/json'
       validate_certs: no
     register: SessionToken

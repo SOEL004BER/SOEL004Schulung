@@ -1,17 +1,17 @@
 ---
 # Einloggen in das Test Hitachi Array, token erstellen
 - name : Einloggen am Array
-  hosts: localhost
+  hosts: e900
   tasks:
   - name: 'Auth & get token'
     uri:
-      url: 'http://18.192.13.182/ConfigurationManager/v1/objects/sessions'
+      url: 'http://{{ address }}/ConfigurationManager/v1/objects/sessions'
       method: POST
       body:
         {"authenticationTimeout":600}
       body_format: json
       headers:
-        Authorization: 'Basic c3lzYWRtaW46c3lzYWRtaW4='
+        Authorization: "Basic {{ (username + ':' + password) | string | b64encode }}"
         Content-Type: 'application/json'
       validate_certs: no
     register: SessionToken
@@ -22,25 +22,22 @@
       var: SessionToken["json"]["token"]
 
 # lese alle ldev aus
-- name : ldev anlegen
-  hosts: localhost
-  tasks:
-  -  name: get ldev
-     uri:
-      url: 'http://18.192.13.182/ConfigurationManager/simple/v1/objects/volumes?startVolumeId=0&capacityUnit=block'
+  - name: 'get ldev'
+    uri:
+      url: 'http://{{ address }}/ConfigurationManager/simple/v1/objects/volumes?startVolumeId=0&capacityUnit=block'
       method: GET
       headers:
         Connection: 'keep-alive'
         Accept: 'application/json, text/plain, */*'
-        X-Agent-Request-Id: 'a3954ec192d2eade5da17a2cb70a2bfe'
-        X-Agent-Type: 'SAE UI/18.192.13.182'
-        Authorization: 'Session a3954ec192d2eade5da17a2cb70a2bfe'
+        X-Agent-Request-Id: 'SessionToken["json"]["token"]'
+        X-Agent-Type: 'SAE UI/{{ address }}'
+        Authorization: 'Session SessionToken["json"]["token"]'
         Content-Type: 'application/json'
-        Referer: 'http://18.192.13.182/StorageAdvisorEmbedded/'
+        Referer: 'http://{{ address }}/StorageAdvisorEmbedded/'
       validate_certs: no
-    register: result
+    register: ldevs
 
 # zeige alle ldev als json an   
   - name: Token Anzeigen
     debug:
-      var: result
+      var: ldevs
