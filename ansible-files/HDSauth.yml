@@ -27,4 +27,4 @@
 
   - name: Dinge Anzeigen
     debug:
-      var: result
+      var: result["json"]["token"]
