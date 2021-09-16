@@ -1,0 +1,48 @@
+---
+# Einloggen in das Test Hitachi Array
+- name : Einloggen am Array
+  hosts: e900
+  tasks:
+  - name: 'Auth & get token'
+    uri:
+      url: 'http://{{ address }}/ConfigurationManager/v1/objects/sessions'
+      method: POST
+      body:
+        {"authenticationTimeout":600}
+      body_format: json
+      headers:
+        Authorization: "Basic {{ (username + ':' + password) | string | b64encode }}"
+        Content-Type: 'application/json'
+      validate_certs: no
+    register: SessionToken
+
+  - name: show session
+    debug:
+      var: SessionToken["json"]["token"]
+
+#ldev erstellen
+  - name: 'ldev erstellen'
+    uri:
+      url: 'http://{{ address }}/ConfigurationManager/simple/v1/objects/volumes'
+      method: POST
+      body:
+        {"capacity":43008,"number":1,"nicknameParam":{"baseName":"soel004_","startNumber":1,"numberOfDigits":3},"savingSetting":"DEDUPLICATION_AND_COMPRESSION","poolId":0}
+      body_format: json
+      headers:
+        Connection: 'keep-alive'
+        Accept: 'application/json, text/plain, */*'
+        X-Agent-Request-Id: '{{ SessionToken["json"]["token"] }}'
+        X-Agent-Type: 'SAE UI/{{ address }}'
+        Authorization: 'Session {{ SessionToken["json"]["token"] }}'
+        Accept-Language: 'en'
+        User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36'
+        Content-Type: 'application/json'
+        Origin: 'http://{{ address }}'
+        Referer: 'http://{{ address }}/StorageAdvisorEmbedded/'
+      status_code: "202"
+      validate_certs: no
+    register: result
+
+    - name: show ldev
+      debug:
+        var: result

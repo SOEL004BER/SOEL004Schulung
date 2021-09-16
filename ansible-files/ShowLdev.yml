@@ -15,22 +15,27 @@
         Content-Type: 'application/json'
       validate_certs: no
     register: SessionToken
+
+  - name: Dinge Anzeigen
+    debug:
       var: SessionToken["json"]["token"]
 
 # lese alle ldev aus
-  - name: 'get ldev'
+  - name: 'ldev anzeigen'
     uri:
       url: 'http://{{ address }}/ConfigurationManager/simple/v1/objects/volumes?startVolumeId=0&capacityUnit=block'
       method: GET
       headers:
+        Connection: 'keep-alive'
         Accept: 'application/json, text/plain, */*'
-        X-Agent-Request-Id:  SessionToken["json"]["token"] 
-        X-Agent-Type: 'SAE UI/{{ address }}'
-        Authorization: Session SessionToken["json"]["token"] 
+        X-Agent-Request-Id: '{{ SessionToken["json"]["token"] }}'
+        X-Agent-Type: 'SAE UI/{{ SessionToken["json"]["token"] }}'
+        Authorization: 'Session {{ SessionToken["json"]["token"] }}'
         Content-Type: 'application/json'
-        Referer: 'http://{{ address }}/StorageAdvisorEmbedded/'
+        Referer: 'http://{{ SessionToken["json"]["token"] }}/StorageAdvisorEmbedded/'
       validate_certs: no
     register: ldevs
+
 
 # zeige alle ldev als json an   
   - name: ldevs Anzeigen

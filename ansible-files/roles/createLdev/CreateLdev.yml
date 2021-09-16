@@ -1,0 +1,37 @@
+---
+# Einloggen in das Test Hitachi Array
+- name : Einloggen am Array
+  hosts: e900
+  tasks:
+  - name: 'Auth & get token'
+    uri:
+      url: 'http://{{ address }}/ConfigurationManager/v1/objects/sessions'
+      method: POST
+      body:
+        {"authenticationTimeout":600}
+      body_format: json
+      headers:
+        Authorization: "Basic {{ (username + ':' + password) | string | b64encode }}"
+        Content-Type: 'application/json'
+      validate_certs: no
+    register: SessionToken
+
+  - name: Dinge Anzeigen
+    debug:
+      var: SessionToken["json"]["token"]
+
+#ldev erstellen
+  - name: 'ldev erstellen'
+    uri:
+      url: 'http://{{ address }}/ConfigurationManager/simple/v1/objects/volumes'
+      method: POST
+      body:
+        {"capacity":43008,"number":1,"nicknameParam":{"baseName":"soel004_","startNumber":1,"numberOfDigits":3},"savingSetting":"DEDUPLICATION_AND_COMPRESSION","poolId":0}
+      body_format: json
+      headers:
+        Connection: 'keep-alive'
+        Accept: 'application/json, text/plain, */*'
+        Authorization: 'Session {{ SessionToken["json"]["token"] }}'
+        Content-Type: 'application/json'
+      validate_certs: no
+    register: result
