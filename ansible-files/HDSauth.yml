@@ -24,3 +24,7 @@
         Referer: 'http://18.192.13.182/StorageAdvisorEmbedded/'
       validate_certs: no
     register: result
+
+  - name: Dinge Anzeigen
+    debug:
+      var: result
